@@ -1,0 +1,109 @@
+<%- include ('../componen/header') %>
+<%- include ('../componen/sideNav') %>
+<div id="loading-overlay" class="loading-overlay">
+  <div class="spinner"></div>
+</div>
+
+<div class="content-wrapper">
+<div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Ralan</h3>
+
+          <div class="card-tools">
+            <div class="input-group input-group-sm" style="width: 150px;">
+              <input id="table-search" type="text" name="table_search" class="form-control float-right" placeholder="Search">
+
+              <div class="input-group-append">
+                <button id="search-button" type="submit" class="btn btn-default">
+                  <i class="fas fa-search"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body table-responsive p-0" style="height: 450px;">
+          <table class="table table-head-fixed text-nowrap">
+            <thead>
+                <tr>
+                  <th>No. Reg</th>
+                  <th>No. Pasien</th>
+                  <th>Tanggal</th>
+                  <th>No. SJP</th>
+                  <th>Nama Pasien</th>
+                  <th>Gol Pasien</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% patients.forEach(patient => { %>
+                  <tr>
+                    <td><%= patient.no_reg %></td>
+                    <td><%= patient.no_pasien %></td>
+                    <td><small><%= new Date(patient.tanggal).toISOString().split('T')[0] %></small></td>
+
+                    <td><%= patient.no_sjp %></td>
+                    <td><%= patient.nama_pasien %></td>
+                    <td><%= patient.gol_pasien %></td>
+                  </tr>
+                <% }); %>
+              </tbody>
+              
+        </table>
+       
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+    </div>
+  </div>
+ 
+    <div class="col-md-3 col-sm-4 col-9">
+      <div class="info-box bg-info">
+        <span class="info-box-icon bg-info"><i class="fas fa-users"></i></span>
+  
+        <div class="info-box-content">
+          <span class="info-box-text">total pasien</span>
+          <span class="info-box-number"><h4><%= patientcounts %></h4></span>
+        </div>
+        <!-- /.info-box-content -->
+      </div>
+      <!-- /.info-box -->
+    </div>
+ 
+  <!-- /.row -->
+  
+</div>
+<%- include ('../componen/footer') %>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Hide the loading overlay once the content is loaded
+    document.getElementById("loading-overlay").style.display = "none";
+    
+    const searchButton = document.getElementById("search-button");
+    const searchInput = document.getElementById("table-search");
+
+    searchButton.addEventListener("click", function(event) {
+      event.preventDefault(); // Prevent the default form submission
+      const searchQuery = searchInput.value; // Get the search query
+
+      if (searchQuery) {
+        // Show the loading overlay
+        document.getElementById("loading-overlay").style.display = "flex";
+
+        // Simulate a search request
+        setTimeout(() => {
+          // After the search request is completed, hide the loading overlay
+          document.getElementById("loading-overlay").style.display = "none";
+          // Perform the search action here (e.g., make an AJAX request)
+          console.log("Search query:", searchQuery);
+          // For demonstration purposes, you can remove the above line and uncomment the below line
+          // window.location.href = `/search?query=${searchQuery}`; // Redirect to search results page
+        }, 1000); // Adjust the delay as needed
+      }
+    });
+  });
+</script>
