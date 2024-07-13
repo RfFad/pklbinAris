@@ -9,7 +9,8 @@ const app = express();
 // Definisi lokasi file router
 const loginRoutes = require('./src/routes/router-login');
 const menu_utamaRoutes= require('./src/routes/menu_utama');
-const pasienRoutes = require ('./src/routes/pasienRoutes')
+const pasienRoutes = require ('./src/routes/pasienRoutes');
+const antrianRoutes=require ('./src/routes/antrian');
 // Configurasi dan gunakan library
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -36,6 +37,7 @@ app.use(express.static(path.join(__dirname, 'src/public')));
 app.use('/login', loginRoutes);
 app.use('/menu', menu_utamaRoutes);
 app.use('/pasien', pasienRoutes);
+app.use('/antrian', antrianRoutes);
 
 // Gunakan port server
 app.listen(5050, ()=>{

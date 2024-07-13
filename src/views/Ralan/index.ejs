@@ -1,20 +1,23 @@
+
+
+    
+
 <%- include ('../componen/header') %>
 <%- include ('../componen/sideNav') %>
+
 <div id="loading-overlay" class="loading-overlay">
   <div class="spinner"></div>
 </div>
 
 <div class="content-wrapper">
-<div class="row">
+  <div class="row">
     <div class="col-12">
       <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Ralan</h3>
-
+        <div class="card-header bg-dark">
+          <h2 class="card-title">List pasien</h2>
           <div class="card-tools">
             <div class="input-group input-group-sm" style="width: 150px;">
               <input id="table-search" type="text" name="table_search" class="form-control float-right" placeholder="Search">
-
               <div class="input-group-append">
                 <button id="search-button" type="submit" class="btn btn-default">
                   <i class="fas fa-search"></i>
@@ -25,33 +28,30 @@
         </div>
         <!-- /.card-header -->
         <div class="card-body table-responsive p-0" style="height: 450px;">
-          <table class="table table-head-fixed text-nowrap">
+          <table class="table table-head-fixed text-nowrap table-striped">
             <thead>
+              <tr>
+                <th>No. Reg</th>
+                <th>No. Pasien</th>
+                <th>Tanggal</th>
+                <th>No. SJP</th>
+                <th>Nama Pasien</th>
+                <th>Gol Pasien</th>
+              </tr>
+            </thead>
+            <tbody class="list">
+              <% patients.forEach(patient => { %>
                 <tr>
-                  <th>No. Reg</th>
-                  <th>No. Pasien</th>
-                  <th>Tanggal</th>
-                  <th>No. SJP</th>
-                  <th>Nama Pasien</th>
-                  <th>Gol Pasien</th>
+                  <td><%= patient.no_reg %></td>
+                  <td><%= patient.no_pasien %></td>
+                  <td><%= new Date(patient.tanggal).toISOString().split('T')[0] %></td>
+                  <td><%= patient.no_sjp %></td>
+                  <td><%= patient.nama_pasien %></td>
+                  <td><%= patient.gol_pasien %></td>
                 </tr>
-              </thead>
-              <tbody>
-                <% patients.forEach(patient => { %>
-                  <tr>
-                    <td><%= patient.no_reg %></td>
-                    <td><%= patient.no_pasien %></td>
-                    <td><small><%= new Date(patient.tanggal).toISOString().split('T')[0] %></small></td>
-
-                    <td><%= patient.no_sjp %></td>
-                    <td><%= patient.nama_pasien %></td>
-                    <td><%= patient.gol_pasien %></td>
-                  </tr>
-                <% }); %>
-              </tbody>
-              
-        </table>
-       
+              <% }); %>
+            </tbody>
+          </table>
         </div>
         <!-- /.card-body -->
       </div>
@@ -59,10 +59,10 @@
     </div>
   </div>
  
-    <div class="col-md-3 col-sm-4 col-9">
-      <div class="info-box bg-info">
+  <div class="col-md-3 col-sm-4 col-9">
+    <div class="d-flex align-items-start">
+      <div class="info-box bg-info flex-grow-1">
         <span class="info-box-icon bg-info"><i class="fas fa-users"></i></span>
-  
         <div class="info-box-content">
           <span class="info-box-text">total pasien</span>
           <span class="info-box-number"><h4><%= patientcounts %></h4></span>
@@ -70,19 +70,70 @@
         <!-- /.info-box-content -->
       </div>
       <!-- /.info-box -->
+      <div class="ml-2 d-flex justify-content-between">
+        <button class="btn btn-danger ml-auto">verifikasi</button>
+      </div>
     </div>
- 
-  <!-- /.row -->
+  </div>
   
+  
+  
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="verifyModal" tabindex="-1" role="dialog" aria-labelledby="verifyModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="verifyModalLabel">Verify Patient Data</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <div class="row">
+            <div class="col-6">
+              <p><strong>No. Reg:</strong> <span id="modalNoReg"></span></p>
+            </div>
+            <div class="col-6">
+              <p><strong>No. Pasien:</strong> <span id="modalNoPasien"></span></p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-6">
+              <p><strong>Tanggal:</strong> <span id="modalTanggal"></span></p>
+            </div>
+            <div class="col-6">
+              <p><strong>No. SJP:</strong> <span id="modalNoSjp"></span></p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-6">
+              <p><strong>Nama Pasien:</strong> <span id="modalNamaPasien"></span></p>
+            </div>
+            <div class="col-6">
+              <p><strong>Gol Pasien:</strong> <span id="modalGolPasien"></span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="confirmVerify">Confirm Verification</button>
+      </div>
+    </div>
+  </div>
 </div>
-<%- include ('../componen/footer') %>
 
 
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     // Hide the loading overlay once the content is loaded
     document.getElementById("loading-overlay").style.display = "none";
-    
+
     const searchButton = document.getElementById("search-button");
     const searchInput = document.getElementById("table-search");
 
@@ -105,5 +156,50 @@
         }, 1000); // Adjust the delay as needed
       }
     });
+
+    // Handle row click and store selected data
+    let selectedData = null;
+    const rows = document.querySelectorAll('.list tr');
+    rows.forEach(row => {
+      row.addEventListener('click', function() {
+        selectedData = {
+          noReg: this.children[0].textContent,
+          noPasien: this.children[1].textContent,
+          tanggal: this.children[2].textContent,
+          noSjp: this.children[3].textContent,
+          namaPasien: this.children[4].textContent,
+          golPasien: this.children[5].textContent,
+        };
+        rows.forEach(r => r.classList.remove('selected'));
+        this.classList.add('selected');
+      });
+    });
+
+    // Handle verify button click to show modal
+    const verifyButton = document.querySelector('.btn-danger');
+    verifyButton.addEventListener('click', function() {
+      if (selectedData) {
+        document.getElementById('modalNoReg').textContent = selectedData.noReg;
+        document.getElementById('modalNoPasien').textContent = selectedData.noPasien;
+        document.getElementById('modalTanggal').textContent = selectedData.tanggal;
+        document.getElementById('modalNoSjp').textContent = selectedData.noSjp;
+        document.getElementById('modalNamaPasien').textContent = selectedData.namaPasien;
+        document.getElementById('modalGolPasien').textContent = selectedData.golPasien;
+        $('#verifyModal').modal('show');
+      } else {
+        alert('Please select a patient row to verify.');
+      }
+    });
+
+    // Handle confirm verification
+    document.getElementById('confirmVerify').addEventListener('click', function() {
+      if (selectedData) {
+        console.log('Verified data:', selectedData);
+        // Perform verification logic here (e.g., AJAX request to verify data)
+        $('#verifyModal').modal('hide');
+      }
+    });
   });
 </script>
+
+<%- include ('../componen/footer') %>
