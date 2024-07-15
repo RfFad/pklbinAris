@@ -4,7 +4,13 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const path = require('path');
 const flash = require('req-flash');
+const http = require('http');
+const socketIO = require('socket.io');
+
 const app = express();
+const server = http.createServer(app);
+const io = socketIO(server);
+
 
 // Definisi lokasi file router
 const loginRoutes = require('./src/routes/router-login');
@@ -39,14 +45,25 @@ app.use('/menu', menu_utamaRoutes);
 app.use('/pasien', pasienRoutes);
 app.use('/antrian', antrianRoutes);
 
+// Socket io event
+// Socket.IO event handling
+io.on('connection', (socket) => {
+    console.log('A user connected');
+    socket.on('callPatient', (data) => {
+        io.emit('patientCalled', data);
+    });
+    socket.on('disconnect', () => {
+        console.log('A user disconnected');
+    });
+});
+
 // Gunakan port server
-app.listen(5050, ()=>{
+server.listen(5050, ()=>{
     console.log('Server Berjalan di Port : '+5050);
 });
 
 // session
 
-app.use(flash());
 
 // tambahkan ini
 app.use(function(req, res, next) {
@@ -54,9 +71,6 @@ app.use(function(req, res, next) {
     res.setHeader('Pragma', 'no-cache');
     next();
 });
-// end
-
-app.set('views',path.join(__dirname,'src/views'));
 
 
 

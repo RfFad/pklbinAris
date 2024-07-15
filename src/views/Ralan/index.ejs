@@ -3,6 +3,7 @@
     
 
 <%- include ('../componen/header') %>
+
 <%- include ('../componen/sideNav') %>
 
 <div id="loading-overlay" class="loading-overlay">
@@ -71,7 +72,10 @@
       </div>
       <!-- /.info-box -->
       <div class="ml-2 d-flex justify-content-between">
-        <button class="btn btn-danger ml-auto">verifikasi</button>
+        <button class="btn btn-danger ml-auto"  id="verify-button">verifikasi</button>
+      </div>
+      <div class="ml-2 d-flex justify-content-between">
+        <button class="btn btn-success ml-auto" id="call-button">panggil</button>
       </div>
     </div>
   </div>
@@ -129,6 +133,10 @@
 </div>
 
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- Include Socket.IO client library -->
+<script src="/socket.io/socket.io.js"></script>
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     // Hide the loading overlay once the content is loaded
@@ -176,7 +184,7 @@
     });
 
     // Handle verify button click to show modal
-    const verifyButton = document.querySelector('.btn-danger');
+    const verifyButton = document.getElementById('verify-button');
     verifyButton.addEventListener('click', function() {
       if (selectedData) {
         document.getElementById('modalNoReg').textContent = selectedData.noReg;
@@ -199,7 +207,38 @@
         $('#verifyModal').modal('hide');
       }
     });
+ 
+  // Socket Io untuk memanggil pasien
+  const socket = io();
+  // untuk tombol panggil dan menampilkan panggilan
+  const callButton = document.getElementById("call-button");//id button panggil
+  callButton.addEventListener('click', function(){
+    if(selectedData){
+      socket.emit('callPatient', selectedData);
+    }else{
+      alert("Please select a patient");
+    }
   });
+
+  //untuk menampilkan pop up jika memanggil pasien
+  socket.on('patientCalled', function(data){
+    $('body').append(`
+    <div class= "popup">
+      <div class= "popup-content">
+        <span class="close">&times;</span>
+        <h2>Panggilan untuk pasien</h2>
+        <p>No. Reg: ${data.noReg}</p>
+        <h4>Nama Pasien: ${data.namaPasien}</h4>
+        </div>
+       </div>
+    `);
+    // Untuk menutup poup
+    $('.popup-content .close').on('click', function(){
+      $(this).closest('.popup').remove();
+    });
+  });
+});
 </script>
+
 
 <%- include ('../componen/footer') %>
