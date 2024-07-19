@@ -6,6 +6,7 @@ const path = require('path');
 const flash = require('req-flash');
 const http = require('http');
 const socketIO = require('socket.io');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 const server = http.createServer(app);
@@ -20,7 +21,7 @@ const antrianRoutes=require ('./src/routes/antrian');
 // Configurasi dan gunakan library
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
-
+app.use(cookieParser());
 // Configurasi library session
 app.use(session({
     resave: false,
