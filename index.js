@@ -18,6 +18,7 @@ const loginRoutes = require('./src/routes/router-login');
 const menu_utamaRoutes= require('./src/routes/menu_utama');
 const pasienRoutes = require ('./src/routes/pasienRoutes');
 const antrianRoutes=require ('./src/routes/antrian');
+const tes_routes = require ('./src/routes/tes_routes');
 // Configurasi dan gunakan library
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -45,6 +46,7 @@ app.use('/login', loginRoutes);
 app.use('/menu', menu_utamaRoutes);
 app.use('/pasien', pasienRoutes);
 app.use('/antrian', antrianRoutes);
+app.use('/verify',tes_routes);
 
 // Socket io event
 // Socket.IO event handling

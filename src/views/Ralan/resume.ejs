@@ -1,29 +1,75 @@
-
-<table class="laporan" width="100%">
-    <thead>
-        <tr>
-            <th rowspan="3" align="center">
-                <img src=""><br><b>RS CIREMAI</b>
-            </th>
-            <th rowspan="3" align="center" style="vertical-align: middle;">
-                <h6>RESUME PASIEN RAWAT JALAN BERKELANJUTAN</h6>
-            </th>
-            <th>Nama</th>
-            <th>:</th>
-            <th><span id="resumeNamaPasien"></span></th>
-        </tr>
-        <tr>
-            <th>Tanggal Lahir</th>
-            <th>:</th>
-            <th></th>
-        </tr>
-        <tr>
-            <th>No. RM</th>
-            <th>:</th>
-            <th></th>
-        </tr>
-    </thead>
+<!DOCTYPE html>
+<html>
+<% if (q1) { %>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src="/js/jquery.js"></script>
+    <script type="text/javascript" src="/js/library.js"></script>
+    <script src="/js/jquery-qrcode.js"></script>
+    <script src="/js/html2pdf.bundle.js"></script>
+    <script src="/js/html2canvas.js"></script>
+    <link rel="icon" href="/img/computer.png" type="image/x-icon" />
     
+</head>
+<script>
+    $(document).ready(function() {
+        getttd();
+        var print = "<%= print %>";
+        if (print=="1") window.print();
+        $(".loading").fadeOut();
+    });
+
+    function getttd() {
+        $.each($(".ttd_dpjp"), function(key, value) {
+            var id_dokter = $(this).attr("id_dokter");
+            var ttd = "<%= siteUrl %>/ttddokter/getttddokterlab/" + id_dokter;
+            $(this).qrcode({
+                width: 100,
+                height: 100,
+                text: ttd
+            });
+        });
+    }
+</script>
+<% let age = ''; %>
+<% if (q1.tgl_lahir) { %>
+    <% const birthDate = q1.tgl_lahir.split('-'); %>
+    <% const year = birthDate[0]; %>
+    <% const month = birthDate[1]; %>
+    <% const day = birthDate[2]; %>
+    <% const yearDiff = new Date().getFullYear() - year; %>
+    <% const monthDiff = new Date().getMonth() + 1 - month; %>
+    <% const dayDiff = new Date().getDate() - day; %>
+    <% age = `${yearDiff} tahun ${Math.abs(monthDiff)} bulan ${Math.abs(dayDiff)} hari`; %>
+<% } %>
+<table class="laporan" width="100%">
+    <tr>
+        <td rowspan="3" align="center">
+            <img src="/rsciremai.png" width="100px"><br><b>RS CIREMAI</b>
+        </td>
+        <td rowspan="3" align="center" style="vertical-align: middle;">
+            <h4>RESUME PASIEN RAWAT JALAN BERKELANJUTAN</h4>
+        </td>
+        <td>Nama</td>
+        <td>:</td>
+        <td><%= q1.nama_pasien %></td>
+    </tr>
+    <tr>
+        <td>Tanggal Lahir</td>
+        <td>:</td>
+        <td><%= q1.tgl_lahir ? new Date(q1.tgl_lahir).toLocaleDateString('id-ID') : '' %> / <%= age %></td>
+    </tr>
+    <tr>
+        <td>No. RM </td>
+        <td>:</td>
+        <td><%= q1.no_pasien %></td>
+    </tr>
+</table>
+<table class="table no-border">
+    <tr>
+        <table class="table no-border"><tr><td class="no-padding"><%= paginationLinks %></td></tr></table>
+    </tr>
 </table>
 <table class="laporan" width="100%">
     <thead>
@@ -41,32 +87,61 @@
         </tr>
     </thead>
     <tbody>
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>
-                <ul style='margin-left:-20px'>
-                    <li></li>
-                    <li></li>
-                </ul>
-            </td>
-            <td></td>
-            <td>
-                <ul style='margin-left:-20px'>
-                    <li></li>
-                    <li></li>
-                </ul>
-            </td>
-            <td align='center'><div class='ttd_dpjp' ></div><br></td>
-            <td></td>
-        </tr>
-        <!-- Add more rows as needed -->
+        <% let no = from; %>
+        <% for (const [noreg, val] of Object.entries(data.ralan)) { %>
+            <% if (val.layan != 2) { %>
+                <tr>
+                    <td><%= ++no %></td>
+                    <td><%= val.no_reg %></td>
+                    <td><%= new Date(val.tanggal).toLocaleString('id-ID') %></td>
+                    <td><%= val.nama_poli %></td>
+                    <td><%= data.igd[val.no_reg]?.a ?? '-' %></td>
+                    <td>
+                        <ul style='margin-left:-20px'>
+                            <% if (data.terapi[val.no_reg]) { %>
+                                <% for (const item of data.terapi[val.no_reg]) { %>
+                                    <li><%= `${item.nama_obat} ${item.qty} ${item.satuan} | ${item.aturan_pakai ?? '-'}` %></li>
+                                <% } %>
+                            <% } else { %>
+                                -
+                            <% } %>
+                        </ul>
+                    </td>
+                    <td><%= data.igd[val.no_reg]?.riwayat_alergi ?? '-' %></td>
+                    <td>
+                        <ul style='margin-left:-20px'>
+                            <% if (data.kasir.ralan[val.no_reg]) { %>
+                                <% for (const item of data.kasir.ralan[val.no_reg]) { %>
+                                    <li><%= item.nama_tindakan %></li>
+                                <% } %>
+                            <% } %>
+                            <% if (data.kasir.lab[val.no_reg]) { %>
+                                <% for (const item of data.kasir.lab[val.no_reg]) { %>
+                                    <li><%= `${item.nama_tindakan} -> ${item.hasil}` %></li>
+                                <% } %>
+                            <% } %>
+                            <% if (data.kasir.rad[val.no_reg]) { %>
+                                <% for (const item of data.kasir.rad[val.no_reg]) { %>
+                                    <li><%= `${item.nama_tindakan} -> ${item.hasil}` %></li>
+                                <% } %>
+                            <% } %>
+                        </ul>
+                    </td>
+                    <td align='center'>
+                        <div class='ttd_dpjp' id_dokter='<%= val.tujuan_poli == "0102041" ? data.radioterapi[val.no_reg]?.dokter : val.dokter_poli %>'></div>
+                        <br><%= val.tujuan_poli == "0102041" ? data.radioterapi[val.no_reg]?.nama_dokter : val.nama_dokter %>
+                    </td>
+                    <td>
+                        <% let icd9Codes = data.grouper_icd9[val.no_reg]?.map(item => item.kode).join(', ') ?? ''; %>
+                        <% let icd10Codes = data.grouper_icd10[val.no_reg]?.map(item => item.kode).join(', ') ?? ''; %>
+                        <%= icd9Codes || icd10Codes ? `${icd9Codes}, ${icd10Codes}` : '-' %>
+                    </td>
+                </tr>
+            <% } %>
+        <% } %>
     </tbody>
 </table>
-
+<% } %>
 <style type="text/css">
     .section {
     border: 1px solid #ccc;
@@ -246,4 +321,3 @@
             border: 1px solid #000 !important;
         }
     </style>
-    

@@ -1,5 +1,6 @@
 const pool = require('../configs/Databases');
 
+
 const getResume = async (no_rm, page, offset) => {
   const data = {
     ralan: {},
