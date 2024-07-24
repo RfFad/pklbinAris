@@ -1,7 +1,6 @@
 const pool = require('../configs/Databases');
 
-
-const getResume = async (no_rm, page, offset) => {
+const getResume = async (no_rm, limit, offset) => {
   const data = {
     ralan: {},
     igd: {},
@@ -13,10 +12,12 @@ const getResume = async (no_rm, page, offset) => {
       rad: {},
     },
     grouper_icd9: {},
-    grouper_icd10: {}
+    grouper_icd10: {},
+    pasien: {}
   };
-
-  // Query to get patient details
+  //pasien data
+  
+  // Query to get patient details with limit and offset for pagination
   const [patients] = await pool.query(`
     SELECT pr.no_reg, pr.no_pasien, pr.layan, pr.dokter_poli, pr.tujuan_poli, pr.tanggal, p.keterangan as nama_poli, d.nama_dokter
     FROM pasien_ralan pr
@@ -26,11 +27,11 @@ const getResume = async (no_rm, page, offset) => {
       AND pr.layan != 2
     ORDER BY pr.tanggal DESC
     LIMIT ?, ?
-  `, [no_rm, offset, page]);
+  `, [no_rm, offset, limit]);
 
   for (const row of patients) {
     data.ralan[row.no_reg] = row;
-
+    
     // Query to get IGD details
     const [igdDetails] = await pool.query(`
       SELECT pi.no_reg, pi.a, pi.riwayat_alergi
@@ -62,7 +63,19 @@ const getResume = async (no_rm, page, offset) => {
     if (terapiDetails.length > 0) {
       data.terapi[row.no_reg] = terapiDetails;
     }
-
+    //pasien data
+    const [pasien_data] = await pool.query(`
+      SELECT r.no_reg, pa.nama_pasien, pa.tgl_lahir, r.no_pasien 
+      FROM pasien pa 
+      JOIN pasien_ralan r ON pa.no_pasien = r.no_pasien 
+      WHERE r.no_reg IN (?)
+    `, [Object.keys(data.ralan)]);
+  
+    for (const pd of pasien_data) {
+      data.pasien[pd.no_reg] = pd;
+    }
+  
+      
     // Query to get outpatient treatments
     const [ralanKasirDetails] = await pool.query(`
       SELECT k.no_reg, k.kode_tarif, tr.nama_tindakan
@@ -124,7 +137,15 @@ const getResume = async (no_rm, page, offset) => {
     }
   }
 
-  return data;
+  // Query to get total record count
+  const [[{ totalRecords }]] = await pool.query(`
+    SELECT COUNT(*) AS totalRecords
+    FROM pasien_ralan
+    WHERE no_pasien = ?
+      AND layan != 2
+  `, [no_rm]);
+
+  return { data, totalRecords };
 };
 
 module.exports = { getResume };

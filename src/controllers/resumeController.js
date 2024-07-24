@@ -3,34 +3,20 @@ const { getResume } = require('../models/resumeModel');
 const verifyResume = async (req, res) => {
   try {
     const no_rm = req.params.no_rm; // Assuming the route provides no_rm
-    const page = parseInt(req.query.page) || 1;
-    const offset = 10;
+    const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
+    const limit = 4; // Records per page
+    const offset = (page - 1) * limit;
 
-    const data = await getResume(no_rm, page, offset);
-
-    // Pagination logic
-    const totalRecords = Object.keys(data.ralan).length; // Adjust this if you have total records from your DB
-    const totalPages = Math.ceil(totalRecords / offset);
-    const from = (page - 1) * offset;
-    
-    const createPaginationLinks = (currentPage, totalPages) => {
-      let links = '';
-      for (let i = 1; i <= totalPages; i++) {
-        if (i === currentPage) {
-          links += `<li class="active"><span>${i}</span></li>`;
-        } else {
-          links += `<li><a href="?page=${i}">${i}</a></li>`;
-        }
-      }
-      return `<ul class="pagination">${links}</ul>`;
-    };
+    // Fetch resume data with limit and offset
+    const { data, totalRecords } = await getResume(no_rm, limit, offset);
+    const totalPages = Math.ceil(totalRecords / limit);
 
     res.render('ralan/resume', {
-      q1: data,
       data: data,
-      from: from,
+      q1: data.pasien[Object.keys(data.pasien)[0]] || {}, // Adjust based on your actual data structure
+      currentPage: page,
+      totalPages: totalPages,
       print: req.query.print || '0',
-      paginationLinks: createPaginationLinks(page, totalPages),
       baseUrl: 'your_base_url_here', // Adjust with your actual base URL
       siteUrl: 'your_site_url_here' // Adjust with your actual site URL
     });

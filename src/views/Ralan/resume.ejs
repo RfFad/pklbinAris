@@ -10,8 +10,8 @@
     <script src="/js/html2pdf.bundle.js"></script>
     <script src="/js/html2canvas.js"></script>
     <link rel="icon" href="/img/computer.png" type="image/x-icon" />
-    
 </head>
+<body>
 <script>
     $(document).ready(function() {
         getttd();
@@ -32,17 +32,19 @@
         });
     }
 </script>
+
 <% let age = ''; %>
 <% if (q1.tgl_lahir) { %>
-    <% const birthDate = q1.tgl_lahir.split('-'); %>
-    <% const year = birthDate[0]; %>
-    <% const month = birthDate[1]; %>
-    <% const day = birthDate[2]; %>
-    <% const yearDiff = new Date().getFullYear() - year; %>
-    <% const monthDiff = new Date().getMonth() + 1 - month; %>
-    <% const dayDiff = new Date().getDate() - day; %>
-    <% age = `${yearDiff} tahun ${Math.abs(monthDiff)} bulan ${Math.abs(dayDiff)} hari`; %>
+    <% 
+        const birthDate = new Date(q1.tgl_lahir);
+        const now = new Date();
+        const yearDiff = now.getFullYear() - birthDate.getFullYear();
+        const monthDiff = now.getMonth() - birthDate.getMonth();
+        const dayDiff = now.getDate() - birthDate.getDate();
+        age = `${yearDiff} tahun ${Math.abs(monthDiff)} bulan ${Math.abs(dayDiff)} hari`; 
+    %>
 <% } %>
+
 <table class="laporan" width="100%">
     <tr>
         <td rowspan="3" align="center">
@@ -61,16 +63,43 @@
         <td><%= q1.tgl_lahir ? new Date(q1.tgl_lahir).toLocaleDateString('id-ID') : '' %> / <%= age %></td>
     </tr>
     <tr>
-        <td>No. RM </td>
+        <td>No. RM</td>
         <td>:</td>
         <td><%= q1.no_pasien %></td>
     </tr>
 </table>
 <table class="table no-border">
-    <tr>
-        <table class="table no-border"><tr><td class="no-padding"><%= paginationLinks %></td></tr></table>
-    </tr>
+    <% if (totalPages > 0) { %>
+        <ul class="pagination text-center">
+            <% if (currentPage == 1) { %>
+                <li class="disabled"><a>First</a></li>
+            <% } else { %>
+                <li><a href="?page=1">First</a></li>
+            <% } %>
+            <% var i = (Number(currentPage) > 5 ? Number(currentPage) - 4 : 1) %>
+            <% if (i !== 1) { %>
+                <li class="disabled"><a>...</a></li>
+            <% } %>
+            <% for (; i <= (Number(currentPage) + 4) && i <= totalPages; i++) { %>
+                <% if (i == currentPage) { %>
+                    <li class="active"><a><%= i %></a></li>
+                <% } else { %>
+                    <li><a href="?page=<%= i %>"><%= i %></a></li>
+                <% } %>
+                <% if (i == Number(currentPage) + 4 && i < totalPages) { %>
+                    <li class="disabled"><a>...</a></li>
+                <% } %>
+            <% } %>
+            <% if (currentPage == totalPages) { %>
+                <li class="disabled"><a>Last</a></li>
+            <% } else { %>
+                <li><a href="?page=<%= totalPages %>">Last</a></li>
+            <% } %>
+        </ul>
+    <% } %>
+    
 </table>
+
 <table class="laporan" width="100%">
     <thead>
         <tr>
@@ -87,7 +116,7 @@
         </tr>
     </thead>
     <tbody>
-        <% let no = from; %>
+        <% let no = (currentPage - 1) * 4; %>
         <% for (const [noreg, val] of Object.entries(data.ralan)) { %>
             <% if (val.layan != 2) { %>
                 <tr>
@@ -110,26 +139,33 @@
                     <td><%= data.igd[val.no_reg]?.riwayat_alergi ?? '-' %></td>
                     <td>
                         <ul style='margin-left:-20px'>
-                            <% if (data.kasir.ralan[val.no_reg]) { %>
+                            <% if (data.kasir?.ralan?.[val.no_reg]) { %>
                                 <% for (const item of data.kasir.ralan[val.no_reg]) { %>
                                     <li><%= item.nama_tindakan %></li>
                                 <% } %>
                             <% } %>
-                            <% if (data.kasir.lab[val.no_reg]) { %>
+                            <% if (data.kasir?.lab?.[val.no_reg]) { %>
                                 <% for (const item of data.kasir.lab[val.no_reg]) { %>
                                     <li><%= `${item.nama_tindakan} -> ${item.hasil}` %></li>
                                 <% } %>
                             <% } %>
-                            <% if (data.kasir.rad[val.no_reg]) { %>
+                            <% if (data.kasir?.rad?.[val.no_reg]) { %>
                                 <% for (const item of data.kasir.rad[val.no_reg]) { %>
                                     <li><%= `${item.nama_tindakan} -> ${item.hasil}` %></li>
                                 <% } %>
                             <% } %>
+                            <% if (data.kasir?.pa?.[val.no_reg]) { %>
+                                <% for (const item of data.kasir.pa[val.no_reg]) { %>
+                                    <li><%= `${item.nama_tindakan} -> ${item.hasil}` %></li>
+                                <% } %>
+                            <% } %>
+                            <% if (!data.kasir?.ralan?.[val.no_reg] && !data.kasir?.lab?.[val.no_reg] && !data.kasir?.rad?.[val.no_reg] && !data.kasir?.pa?.[val.no_reg]) { %>
+                                -
+                            <% } %>
                         </ul>
                     </td>
-                    <td align='center'>
-                        <div class='ttd_dpjp' id_dokter='<%= val.tujuan_poli == "0102041" ? data.radioterapi[val.no_reg]?.dokter : val.dokter_poli %>'></div>
-                        <br><%= val.tujuan_poli == "0102041" ? data.radioterapi[val.no_reg]?.nama_dokter : val.nama_dokter %>
+                    <td>
+                        <div class="ttd_dpjp" id_dokter="<%= val.dpjp %>"></div>
                     </td>
                     <td>
                         <% let icd9Codes = data.grouper_icd9[val.no_reg]?.map(item => item.kode).join(', ') ?? ''; %>
@@ -141,32 +177,8 @@
         <% } %>
     </tbody>
 </table>
-<% } %>
+
 <style type="text/css">
-    .section {
-    border: 1px solid #ccc;
-    margin-bottom: 10px;
-    cursor: pointer;
-    position: relative; /* Menambahkan posisi relatif untuk mengatur posisi absolut ikon */
-}
-
-.section-title {
-    background-color: #f0f0f0;
-    padding: 10px;
-    font-weight: bold;
-    display: flex;
-    justify-content: space-between; /* Mengatur agar teks dan ikon berada di ujung kanan */
-    align-items: center; /* Memastikan vertikal ditengah */
-}
-
-.toggle-icon {
-    margin-left: 10px; /* Memberi sedikit ruang antara teks dan ikon */
-}
-
-.section-content {
-    padding: 10px;
-    display: none; /* Menyembunyikan konten awalnya */
-}
     .pagination {
       display: inline-block;
       padding-left: 0;
@@ -265,59 +277,48 @@
       border-top-right-radius: 3px;
       border-bottom-right-radius: 3px;
     }
-        .laporan {
-            border-collapse: collapse !important;
-            background-color: transparent;
-            width: 100%;
-            max-width: 100%;
-            margin-bottom: 20px;
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            font-size: 12px;
-        }
-    
-        .laporan {
-            border-collapse: collapse !important;
-            background-color: transparent;
-            width: 100%;
-            max-width: 100%;
-            margin-bottom: 20px;
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            font-size: 12px;
-        }
-    
-        .laporan>thead>tr>th,
-        .laporan>tbody>tr>th,
-        .laporan>tfoot>tr>th,
-        .laporan>thead>tr>td,
-        .laporan>tbody>tr>td,
-        .laporan>tfoot>tr>td {
-            padding: 8px;
-            line-height: 1.42857143;
-            vertical-align: top;
-            border-top: 1px solid #ddd;
-        }
-    
-        .laporan>thead>tr>th {
-            vertical-align: bottom;
-            border-bottom: 2px solid #ddd;
-        }
-    
-        .laporan>caption+thead>tr:first-child>th,
-        .laporan>colgroup+thead>tr:first-child>th,
-        .laporan>thead:first-child>tr:first-child>th,
-        .laporan>caption+thead>tr:first-child>td,
-        .laporan>colgroup+thead>tr:first-child>td,
-        .laporan>thead:first-child>tr:first-child>td {
-            border-top: 0;
-        }
-    
-        .laporan>tbody+tbody {
-            border-top: 2px solid #ddd;
-        }
-    
-        .laporan td,
-        .laporan th {
-            background-color: #fff !important;
-            border: 1px solid #000 !important;
-        }
-    </style>
+    .laporan {
+        border-collapse: collapse !important;
+        background-color: transparent;
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 20px;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 12px;
+    }
+    .laporan>thead>tr>th,
+    .laporan>tbody>tr>th,
+    .laporan>tfoot>tr>th,
+    .laporan>thead>tr>td,
+    .laporan>tbody>tr>td,
+    .laporan>tfoot>tr>td {
+        padding: 8px;
+        line-height: 1.42857143;
+        vertical-align: top;
+        border-top: 1px solid #ddd;
+    }
+    .laporan>thead>tr>th {
+        vertical-align: bottom;
+        border-bottom: 2px solid #ddd;
+    }
+    .laporan>caption+thead>tr:first-child>th,
+    .laporan>colgroup+thead>tr:first-child>th,
+    .laporan>thead:first-child>tr:first-child>th,
+    .laporan>caption+thead>tr:first-child>td,
+    .laporan>colgroup+thead>tr:first-child>td,
+    .laporan>thead:first-child>tr:first-child>td {
+        border-top: 0;
+    }
+    .laporan>tbody+tbody {
+        border-top: 2px solid #ddd;
+    }
+    .laporan td,
+    .laporan th {
+        background-color: #fff !important;
+        border: 1px solid #000 !important;
+    }
+</style>
+
+<% } %>
+</body>
+</html>
