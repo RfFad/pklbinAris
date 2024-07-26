@@ -1,11 +1,10 @@
-<!-- index.ejs atau file yang digunakan untuk menampilkan data pasien -->
 <%- include ('../componen/header') %>
 <style>
   .section {
     border: 1px solid #ccc;
     margin-bottom: 10px;
     cursor: pointer;
-    position: relative; /* Menambahkan posisi relatif untuk mengatur posisi absolut ikon */
+    position: relative;
   }
 
   .section-title {
@@ -13,17 +12,17 @@
     padding: 10px;
     font-weight: bold;
     display: flex;
-    justify-content: space-between; /* Mengatur agar teks dan ikon berada di ujung kanan */
-    align-items: center; /* Memastikan vertikal ditengah */
+    justify-content: space-between;
+    align-items: center;
   }
 
   .toggle-icon {
-    margin-left: 10px; /* Memberi sedikit ruang antara teks dan ikon */
+    margin-left: 10px;
   }
 
   .section-content {
     padding: 10px;
-    display: none; /* Menyembunyikan konten awalnya */
+    display: none;
   }
 
   .loading-spinner {
@@ -39,16 +38,13 @@
 </style>
 <%- include ('../componen/sideNav') %>
 
-<!-- Konten HTML -->
 <div id="loading-overlay" class="loading-overlay">
   <div class="spinner"></div>
 </div>
 
 <div class="content-wrapper">
-  <!-- Bagian Tabel Pasien -->
   <div class="row">
     <div class="col-12">
-      <!-- Card untuk Menampilkan Data Pasien -->
       <div class="card">
         <div class="card-header bg-dark">
           <h2 class="card-title">List pasien</h2>
@@ -63,7 +59,6 @@
             </div>
           </div>
         </div>
-        <!-- /.card-header -->
         <div class="card-body table-responsive p-0" style="height: 450px;">
           <table class="table table-head-fixed text-nowrap table-striped">
             <thead>
@@ -74,7 +69,6 @@
                 <th>No. SJP</th>
                 <th>Nama Pasien</th>
                 <th>Gol Pasien</th>
-                
               </tr>
             </thead>
             <tbody class="list">
@@ -86,19 +80,15 @@
                   <td><%= patient.no_sjp %></td>
                   <td><%= patient.nama_pasien %></td>
                   <td><%= patient.gol_pasien %></td>
-                  
                 </tr>
               <% }); %>
             </tbody>
           </table>
         </div>
-        <!-- /.card-body -->
       </div>
-      <!-- /.card -->
     </div>
   </div>
 
-  <!-- Bagian Info Box -->
   <div class="col-md-3 col-sm-4 col-9">
     <div class="d-flex align-items-start">
       <div class="info-box bg-info flex-grow-1">
@@ -107,9 +97,7 @@
           <span class="info-box-text">total pasien</span>
           <span class="info-box-number"><h4><%= patientcounts %></h4></span>
         </div>
-        <!-- /.info-box-content -->
       </div>
-      <!-- /.info-box -->
       <div class="ml-2 d-flex justify-content-between">
         <button class="btn btn-success ml-auto" id="call-button">panggil</button>
       </div>
@@ -119,7 +107,6 @@
     </div>
   </div>
 
-  <!-- Modal Verifikasi -->
   <div class="modal fade" id="verifyModal" tabindex="-1" role="dialog" aria-labelledby="verifyModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content">
@@ -156,20 +143,19 @@
               </div>
             </div>
           </div>
-          <!-- Bagian Resume -->
-          <div class="section" onclick="toggleSection(this)">
-            <div class="section-title" id="resume-button"><h5>1. RESUME</h5><span class="toggle-icon">+</span></div>
+          <div class="section">
+            <div class="section-title">
+              <h5>1. RESUME</h5>
+              <span class="toggle-icon" id="resume-button" onclick="toggleSection(this)">+</span>
+            </div>
             <div class="section-content" id="resumeDetails">
               <div class="loading-spinner" id="resumeLoadingSpinner">
-                <img src="loading.gif" >
+                <img src="loading.gif">
               </div>
-              <div id="resumeDataBody">
-                 
-              </div>
+              <div id="resumeDataBody"></div>
             </div>
           </div>
         </div>
-        <!-- Footer Modal -->
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         </div>
@@ -256,7 +242,7 @@
   $('#verifyModal').on('hidden.bs.modal', function () {
     $('#resumeDataBody').html('');
     $('#resumeDetails').hide();
-    $('#resume-button .toggle-icon').text('+');
+    $('.toggle-icon').text('+');
   });
 
   // Socket.IO untuk memanggil pasien
@@ -292,12 +278,12 @@
   });
 
   // Fungsi Toggle Bagian di Modal
-  $('.section').on('click', function() {
-    const content = $(this).find('.section-content');
-    const icon = $(this).find('.toggle-icon');
-    content.toggle();
-    icon.text(content.is(':visible') ? '-' : '+');
-  });
+  $('.toggle-icon').on('click', function() {
+        const content = $(this).closest('.section').find('.section-content');
+        const icon = $(this).closest('.section').find('.toggle-icon');
+        content.toggle();
+        icon.text(content.is(':visible') ? '-' : '+');
+      });
 
   // Pilih baris untuk ditandai
   $('.list tr').on('click', function() {
@@ -307,4 +293,4 @@
 });
 
   </script>
- <%- include ('../componen/footer') %>
+<%- include ('../componen/footer') %>

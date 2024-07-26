@@ -23,7 +23,7 @@
     function getttd() {
         $.each($(".ttd_dpjp"), function(key, value) {
             var id_dokter = $(this).attr("id_dokter");
-            var ttd = "<%= siteUrl %>/ttddokter/getttddokterlab/" + id_dokter;
+            var ttd = "/ttddokter/getttddokterlab/" + id_dokter;
             $(this).qrcode({
                 width: 100,
                 height: 100,
@@ -164,8 +164,9 @@
                             <% } %>
                         </ul>
                     </td>
-                    <td>
-                        <div class="ttd_dpjp" id_dokter="<%= val.dpjp %>"></div>
+                    <td align='center'>
+                        <div class='ttd_dpjp' id_dokter='<%= val.tujuan_poli == "0102041" ? data.radioterapi[val.no_reg]?.dokter : val.dokter_poli %>'></div>
+                        <br><%= val.tujuan_poli == "0102041" ? data.radioterapi[val.no_reg]?.nama_dokter : val.nama_dokter %>
                     </td>
                     <td>
                         <% let icd9Codes = data.grouper_icd9[val.no_reg]?.map(item => item.kode).join(', ') ?? ''; %>
