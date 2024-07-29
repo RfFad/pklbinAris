@@ -12,6 +12,28 @@
     <link rel="icon" href="/img/computer.png" type="image/x-icon" />
 </head>
 <body>
+    <!-- Di bagian body atau template EJS Anda -->
+   
+    
+<!-- Di bagian akhir body atau template EJS Anda -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const loading = document.getElementById('loading');
+  
+      function showLoading() {
+        loading.style.display = 'block';
+      }
+  
+      function hideLoading() {
+        loading.style.display = 'none';
+      }
+  
+      window.addEventListener('beforeunload', showLoading);
+  
+      window.addEventListener('pageshow', hideLoading);
+    });
+  </script>
+    
 <script>
     $(document).ready(function() {
         getttd();
@@ -71,32 +93,38 @@
 <table class="table no-border">
     <% if (totalPages > 0) { %>
         <ul class="pagination text-center">
-            <% if (currentPage == 1) { %>
+            <% if (currentPage === 1) { %>
                 <li class="disabled"><a>First</a></li>
             <% } else { %>
                 <li><a href="?page=1">First</a></li>
             <% } %>
-            <% var i = (Number(currentPage) > 5 ? Number(currentPage) - 4 : 1) %>
-            <% if (i !== 1) { %>
+    
+            <% var startPage = currentPage > 5 ? currentPage - 4 : 1; %>
+            <% if (startPage > 1) { %>
                 <li class="disabled"><a>...</a></li>
             <% } %>
-            <% for (; i <= (Number(currentPage) + 4) && i <= totalPages; i++) { %>
-                <% if (i == currentPage) { %>
+    
+            <% for (var i = startPage; i <= startPage + 4 && i <= totalPages; i++) { %>
+                <% if (i === currentPage) { %>
                     <li class="active"><a><%= i %></a></li>
                 <% } else { %>
                     <li><a href="?page=<%= i %>"><%= i %></a></li>
                 <% } %>
-                <% if (i == Number(currentPage) + 4 && i < totalPages) { %>
-                    <li class="disabled"><a>...</a></li>
-                <% } %>
             <% } %>
-            <% if (currentPage == totalPages) { %>
+    
+            <% if (startPage + 4 < totalPages) { %>
+                <li class="disabled"><a>...</a></li>
+            <% } %>
+    
+            <% if (currentPage === totalPages) { %>
                 <li class="disabled"><a>Last</a></li>
             <% } else { %>
                 <li><a href="?page=<%= totalPages %>">Last</a></li>
             <% } %>
         </ul>
     <% } %>
+    
+    
     
 </table>
 
@@ -180,6 +208,10 @@
 </table>
 
 <style type="text/css">
+    /* styles.css */
+
+ 
+
     .pagination {
       display: inline-block;
       padding-left: 0;

@@ -1,7 +1,8 @@
-<%- include ('../componen/header') %>
+<%- include('../componen/header') %>
 <style>
   .section {
-    border: 1px solid #ccc;
+    border: 2px outset #ccc;
+    border-radius: 20px;
     margin-bottom: 10px;
     cursor: pointer;
     position: relative;
@@ -9,6 +10,7 @@
 
   .section-title {
     background-color: #f0f0f0;
+    border-radius: 20px;
     padding: 10px;
     font-weight: bold;
     display: flex;
@@ -36,7 +38,7 @@
     height: 50px;
   }
 </style>
-<%- include ('../componen/sideNav') %>
+<%- include('../componen/sideNav') %>
 
 <div id="loading-overlay" class="loading-overlay">
   <div class="spinner"></div>
@@ -99,10 +101,10 @@
         </div>
       </div>
       <div class="ml-2 d-flex justify-content-between">
-        <button class="btn btn-success ml-auto" id="call-button">panggil</button>
+        <button class="btn btn-success ml-auto" id="call-button">Panggil</button>
       </div>
       <div class="ml-2 d-flex justify-content-between">
-        <button class="btn btn-danger ml-auto verify-button">verifikasi</button>
+        <button class="btn btn-danger ml-auto verify-button">Verifikasi</button>
       </div>
     </div>
   </div>
@@ -111,7 +113,7 @@
     <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="verifyModalLabel">Verify Patient Data</h5>
+          <h5 class="modal-title" id="verifyModalLabel">Verifikasi Data Pasien</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -150,7 +152,7 @@
             </div>
             <div class="section-content" id="resumeDetails">
               <div class="loading-spinner" id="resumeLoadingSpinner">
-                <img src="loading.gif">
+                <img src="loading.gif" alt="Loading">
               </div>
               <div id="resumeDataBody"></div>
             </div>
@@ -169,128 +171,142 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
     $(document).ready(function() {
-  $('#loading-overlay').hide();
-
-  // Fungsi Pencarian
-  $('#search-button').on('click', function(event) {
-    event.preventDefault();
-    const searchQuery = $('#table-search').val();
-    if (searchQuery) {
-      $('#loading-overlay').show();
-      setTimeout(() => {
-        $('#loading-overlay').hide();
-        console.log("Query pencarian:", searchQuery);
-      }, 1000);
-    }
-  });
-
-  let selectedData = null;
-  const rows = document.querySelectorAll('.list tr');
-  rows.forEach(row => {
-    row.addEventListener('click', function() {
-      selectedData = {
-        noReg: this.children[0].textContent,
-        noPasien: this.children[1].textContent,
-        tanggal: this.children[2].textContent,
-        noSjp: this.children[3].textContent,
-        namaPasien: this.children[4].textContent,
-        golPasien: this.children[5].textContent,
-      };
-      rows.forEach(r => r.classList.remove('selected'));
-      this.classList.add('selected');
-    });
-  });
-
-  // Fungsi Tombol Verifikasi
-  $('.verify-button').on('click', function() {
-    if (selectedData) {
-      document.getElementById('modalNoReg').textContent = selectedData.noReg;
-      document.getElementById('modalNoPasien').textContent = selectedData.noPasien;
-      document.getElementById('modalTanggal').textContent = selectedData.tanggal;
-      document.getElementById('modalNoSjp').textContent = selectedData.noSjp;
-      document.getElementById('modalNamaPasien').textContent = selectedData.namaPasien;
-      document.getElementById('modalGolPasien').textContent = selectedData.golPasien;
-      
-      $('#verifyModal').modal('show');
-    } else {
-      alert('Please select a patient row to verify.');
-    }
-  });
-
-  // Memuat data resume ketika bagian toggle diklik
-  $('#resume-button').on('click', function() {
-    const no_rm = selectedData.noPasien;
-    $('#resumeLoadingSpinner').show();
-    $('#resumeDataBody').html(''); // Kosongkan konten sebelumnya
-
-    $.ajax({
-      url: `verify/resume/${no_rm}`,
-      method: 'GET',
-      data: {no_rm: no_rm},
-      success: function(response) {
-        $('#resumeDataBody').html(response);
-        $('#resumeLoadingSpinner').hide();
-      },
-      error: function() {
-        alert('Gagal mengambil data resume');
-        $('#resumeLoadingSpinner').hide();
-      }
-    });
-  });
-
-  // Event handler untuk refresh data resume dan mengembalikan bagian resume ke keadaan tertutup ketika modal ditutup
-  $('#verifyModal').on('hidden.bs.modal', function () {
-    $('#resumeDataBody').html('');
-    $('#resumeDetails').hide();
-    $('.toggle-icon').text('+');
-  });
-
-  // Socket.IO untuk memanggil pasien
-  const socket = io();
-  $('#call-button').on('click', function() {
-    const selectedRow = $('.list tr.selected');
-    if (selectedRow.length) {
-      const selectedData = {
-        noReg: selectedRow.find('td').eq(0).text(),
-        noPasien: selectedRow.find('td').eq(1).text(),
-        namaPasien: selectedRow.find('td').eq(4).text()
-      };
-      socket.emit('callPatient', selectedData);
-    } else {
-      alert("Harap pilih seorang pasien");
-    }
-  });
-
-  socket.on('patientCalled', function(data) {
-    $('body').append(`
-      <div class="popup">
-        <div class="popup-content">
-          <span class="close">&times;</span>
-          <h2 class="bg-danger">Panggilan untuk pasien</h2>
-          <h4>No. Pasine: ${data.noPasien}</h4>
-          <h6>Nama Pasien: ${data.namaPasien}</h6>
-        </div>
-      </div>
-    `);
-    $('.popup-content .close').on('click', function() {
-      $(this).closest('.popup').remove();
-    });
-  });
-
-  // Fungsi Toggle Bagian di Modal
-  $('.toggle-icon').on('click', function() {
+     
+  
+      // Fungsi Pencarian
+      $('#search-button').on('click', function(event) {
+        event.preventDefault();
+      });
+  
+      let selectedData = null;
+      const rows = document.querySelectorAll('.list tr');
+      rows.forEach(row => {
+        row.addEventListener('click', function() {
+          selectedData = {
+            noReg: this.children[0].textContent,
+            noPasien: this.children[1].textContent,
+            tanggal: this.children[2].textContent,
+            noSjp: this.children[3].textContent,
+            namaPasien: this.children[4].textContent,
+            golPasien: this.children[5].textContent,
+          };
+          rows.forEach(r => r.classList.remove('selected'));
+          this.classList.add('selected');
+        });
+      });
+  
+      // Fungsi Tombol Verifikasi
+      $('.verify-button').on('click', function() {
+        if (selectedData) {
+          document.getElementById('modalNoReg').textContent = selectedData.noReg;
+          document.getElementById('modalNoPasien').textContent = selectedData.noPasien;
+          document.getElementById('modalTanggal').textContent = selectedData.tanggal;
+          document.getElementById('modalNoSjp').textContent = selectedData.noSjp;
+          document.getElementById('modalNamaPasien').textContent = selectedData.namaPasien;
+          document.getElementById('modalGolPasien').textContent = selectedData.golPasien;
+  
+          $('#verifyModal').modal('show');
+        } else {
+          alert('Please select a patient row to verify.');
+        }
+      });
+  
+      // Memuat data resume ketika bagian toggle diklik
+      $('#resume-button').on('click', function() {
+        if (selectedData) {
+          const no_rm = selectedData.noPasien;
+          $('#resumeLoadingSpinner').show();
+          $('#resumeDataBody').hide(); // Hide the current data
+  
+          function fetchResumeData(no_rm, page = 1) {
+            $('#resumeLoadingSpinner').show(); // Show loading spinner
+            $('#resumeDataBody').hide(); // Hide the resume data body
+  
+            $.ajax({
+              url: `pasien/resume/${no_rm}?page=${page}`,
+              method: 'GET',
+              data: { no_rm: no_rm },
+              success: function(response) {
+                $('#resumeDataBody').html(response);
+                $('#resumeLoadingSpinner').hide();
+                $('#resumeDataBody').show(); // Show the new data
+  
+                $('#resumeDataBody .pagination a').on('click', function(e) {
+                  e.preventDefault();
+                  const newPage = $(this).attr('href').split('page=')[1]; // Ambil nomor halaman dari href
+                  fetchResumeData(no_rm, newPage);
+                });
+              },
+              error: function() {
+                alert('Gagal mengambil data resume');
+                $('#resumeLoadingSpinner').hide();
+              }
+            });
+          }
+  
+          fetchResumeData(no_rm);
+        } else {
+          alert('Please select a patient row to load resume data.');
+        }
+      });
+  
+      // Event handler untuk refresh data resume dan mengembalikan bagian resume ke keadaan tertutup ketika modal ditutup
+      $('#verifyModal').on('hidden.bs.modal', function() {
+        $('#resumeDataBody').html('');
+        $('#resumeDetails').hide();
+        $('.toggle-icon').text('+');
+      });
+  
+      // Socket.IO untuk memanggil pasien
+      const socket = io();
+      $('#call-button').on('click', function() {
+        
+        if (selectedData) {
+          socket.emit('callPatient', selectedData);
+        } else {
+          alert("Harap pilih seorang pasien");
+        }
+      });
+  
+      socket.on('patientCalled', function(data) {
+        $('body').append(`
+          <div class="popup">
+            <div class="popup-content">
+              <span class="close">&times;</span>
+              <div class="header-popup">
+              <h2>Panggilan untuk pasien</h2>
+              </div>
+              <div class="body-popup">
+              <h3>${data.namaPasien}</h3>
+              <h3>No. Pasien: ${data.noPasien}</h3>
+              </div>
+              
+            </div>
+          </div>
+        `);
+        $('.popup-content .close').on('click', function() {
+          $(this).closest('.popup').remove();
+        });
+      });
+  
+      // Fungsi Toggle Bagian di Modal
+      $('.toggle-icon').on('click', function() {
         const content = $(this).closest('.section').find('.section-content');
         const icon = $(this).closest('.section').find('.toggle-icon');
         content.toggle();
         icon.text(content.is(':visible') ? '-' : '+');
       });
-
-  // Pilih baris untuk ditandai
-  $('.list tr').on('click', function() {
-    $('.list tr').removeClass('selected');
-    $(this).addClass('selected');
-  });
-});
-
+  
+      // Pilih baris untuk ditandai
+      $('.list tr').on('click', function() {
+        $('.list tr').removeClass('selected');
+        $(this).addClass('selected');
+      });
+    });
   </script>
-<%- include ('../componen/footer') %>
+  
+  
+  
+</div>
+
+<%- include('../componen/footer') %>

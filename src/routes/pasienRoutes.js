@@ -9,6 +9,6 @@ const {verifyResume} = require('../controllers/resumeController')
 router.use(verifyAndRefreshToken);
 // Route to fetch resume data by no_reg
 router.get('/', showPatients,verifyUser.isLogin,authHeader);
-router.get('/resume/:no_rm', verifyResume);
+router.get('/resume/:no_rm', verifyResume,authHeader);
 
 module.exports = router;

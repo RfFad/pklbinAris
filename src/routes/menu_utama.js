@@ -8,8 +8,8 @@ const router = express.Router();
 router.use(verifyAndRefreshToken);
 
 // GET menu utama page
-router.get('/', verifyUser.isLogin, authHeader, (req, res) => {
-  res.render('menu_utama', { title: 'Menu Utama' });
+router.get('/', authHeader, (req, res) => {
+  res.render('menu_utama');
 });
 
 module.exports = router;

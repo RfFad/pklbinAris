@@ -26,53 +26,9 @@
   <!-- summernote -->
   <link rel="stylesheet" href="/plugins/summernote/summernote-bs4.min.css">
   <style>
-    .spinner {
-      border: 16px solid #f3f3f3; /* Light grey */
-      border-top: 16px solid #3498db; /* Blue */
-      border-radius: 50%;
-      width: 100px;
-      height: 100px;
-      animation: spin 2s linear infinite;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .loading-overlay {
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      background: rgba(255, 255, 255, 0.8);
-      z-index: 9999;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    @media (max-width: 600px) {
-      .spinner {
-        width: 60px;
-        height: 60px;
-        border-width: 12px;
-      }
-    }
-
-    @media (min-width: 601px) and (max-width: 1024px) {
-      .spinner {
-        width: 80px;
-        height: 80px;
-        border-width: 14px;
-      }
-    }
-    .selected {
+    
+    @import url('https://fonts.googleapis.com/css2?family=Concert+One&family=Lora:ital,wght@0,400..700;1,400..700&family=Nova+Mono&family=Rubik+Mono+One&display=swap');
+  .selected {
       background-color: #d3d3d3; /* Highlight selected row */
     }
   .popup {
@@ -88,11 +44,40 @@
       z-index: 1000;
     }
     .popup-content {
-      background: #fff;
-      padding: 20px;
-      border-radius: 5px;
+      font-family: "Lora", serif;
+      height: 350px;
+      border-radius: 10px;
       text-align: center;
       position: relative;
+      width: 400px;
+      
+    }
+    .header-popup{
+      background-color: rgb(255,204,0);
+      width: 100%;
+      border-bottom: 1px solid black;
+      height: 80px;
+      border-radius: 15px;
+      margin-bottom: 10px;
+      
+    }
+    .header-popup h2{
+      position: relative;
+      top: 25%;
+      font-size: 25px;
+      text-transform: uppercase;
+      vertical-align: middle;
+    }
+    .body-popup{
+      height: 200px;
+      background-color: #fff;
+      border-radius: 15px;
+      padding: 30px;
+    }
+    .body-popup h3{
+      
+     position: relative;
+     
     }
     .popup-content .close {
       position: absolute;
@@ -101,11 +86,14 @@
       font-size: 20px;
       cursor: pointer;
     }
+    
+
+/* Loading content styling */
   </style>
 
 </head>
 <body class="hold-transition sidebar-mini">
-   <div id="loading"></div>
+   
    <div class="wrapper">
     <nav class="main-header navbar navbar-expand navbar-white navbar-light">
         <!-- Left navbar links -->
@@ -114,10 +102,10 @@
             <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
           </li>
           <li class="nav-item d-none d-sm-inline-block">
-            <a href="/menu" class="nav-link">Home</a>
+            <a href="/menu" class="nav-link"><i class="fas fa-home">Home</i></a>
           </li>
           <li class="nav-item d-none d-sm-inline-block">
-            <a href="#" class="nav-link">Contact</a>
+            <a href="/login/logout" class="nav-link"><i class="fas fa-sign-out-alt">Logout</i></a>
           </li>
         </ul>
     

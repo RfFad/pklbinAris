@@ -29,7 +29,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nova+Mono&family=Rubik+Mono+One&display=swap" rel="stylesheet">
   <style>
-    .popup {
+     @import url('https://fonts.googleapis.com/css2?family=Concert+One&family=Lora:ital,wght@0,400..700;1,400..700&family=Nova+Mono&family=Rubik+Mono+One&display=swap');
+  .selected {
+      background-color: #d3d3d3; /* Highlight selected row */
+    }
+  .popup {
       position: fixed;
       top: 0;
       left: 0;
@@ -42,11 +46,40 @@
       z-index: 1000;
     }
     .popup-content {
-      background: #fff;
-      padding: 20px;
-      border-radius: 5px;
+      font-family: "Lora", serif;
+      height: 350px;
+      border-radius: 10px;
       text-align: center;
       position: relative;
+      width: 400px;
+      
+    }
+    .header-popup{
+      background-color: rgb(255,204,0);
+      width: 100%;
+      border-bottom: 1px solid black;
+      height: 80px;
+      border-radius: 15px;
+      margin-bottom: 10px;
+      
+    }
+    .header-popup h2{
+      position: relative;
+      top: 25%;
+      font-size: 25px;
+      text-transform: uppercase;
+      vertical-align: middle;
+    }
+    .body-popup{
+      height: 200px;
+      background-color: #fff;
+      border-radius: 15px;
+      padding: 30px;
+    }
+    .body-popup h3{
+      
+     position: relative;
+     
     }
     .popup-content .close {
       position: absolute;
@@ -55,6 +88,7 @@
       font-size: 20px;
       cursor: pointer;
     }
+    
   </style>
  
 </head>
@@ -129,9 +163,13 @@
           <div class="popup">
             <div class="popup-content">
               <span class="close">&times;</span>
+              <div class="header-popup">
               <h2>Panggilan untuk pasien</h2>
-              <p>No. Reg: ${data.noReg}</p>
-              <h4>Nama Pasien: ${data.namaPasien}</h4>
+              </div>
+              <div class="body-popup">
+              <h3>${data.namaPasien}</h3>
+              <h3>No. Pasien: ${data.noPasien}</h3>
+              </div>
             </div>
           </div>
         `);

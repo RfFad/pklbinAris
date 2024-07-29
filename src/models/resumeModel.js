@@ -59,6 +59,7 @@ const getResume = async (no_rm, limit, offset) => {
       FROM apotek a
       LEFT JOIN aturan_pakai ap ON ap.kode = a.aturan_pakai
       WHERE a.no_reg = ?
+       
     `, [row.no_reg]);
     if (terapiDetails.length > 0) {
       data.terapi[row.no_reg] = terapiDetails;
