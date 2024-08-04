@@ -75,7 +75,7 @@
             </thead>
             <tbody class="list">
               <% patients.forEach(patient => { %>
-                <tr data-no-rm="<%= patient.no_pasien %>">
+                <tr data-no-rm="<%= patient.no_pasien %>" data-no-reg="<%= patient.no_reg %>">
                   <td><%= patient.no_reg %></td>
                   <td><%= patient.no_pasien %></td>
                   <td><%= new Date(patient.tanggal).toISOString().split('T')[0] %></td>
@@ -155,6 +155,18 @@
                 <img src="loading.gif" alt="Loading">
               </div>
               <div id="resumeDataBody"></div>
+            </div>
+          </div>
+          <div class="section">
+            <div class="section-title">
+              <h5>2. TINDAKAN RALAN</h5>
+              <span class="toggle-icon" id="ralan-button" onclick="toggleSection(this)">+</span>
+            </div>
+            <div class="section-content" id="ralanDetails">
+              <div class="loading-spinner" id="ralanLoadingSpinner">
+                <img src="loading.gif" alt="Loading">
+              </div>
+              <div id="ralanDataBody"></div>
             </div>
           </div>
         </div>
@@ -249,11 +261,39 @@
           alert('Please select a patient row to load resume data.');
         }
       });
+  // data tindakan ralan
+      $('#ralan-button').on('click', function() {
+        if (selectedData) {
+          const no_rm = selectedData.noPasien;
+          const no_reg = selectedData.noReg;
+          $('#ralanLoadingSpinner').show();
+          $('#ralanDataBody').hide(); // Hide the current data
+            $.ajax({
+              url: `e-Resep/getlistobat/${no_rm}/${no_reg}`,
+              method: 'GET',
+              data: { no_rm: no_rm, no_reg: no_reg },
+              success: function(response) {
+                $('#ralanDataBody').html(response);
+                $('#ralanLoadingSpinner').hide();
+                $('#ralanDataBody').show(); // Show the new data
+              },
+              error: function() {
+                alert('Gagal mengambil data ralan');
+                $('#ralanLoadingSpinner').hide();
+              }
+            });
+          }
+  
+          
+        
+      });
   
       // Event handler untuk refresh data resume dan mengembalikan bagian resume ke keadaan tertutup ketika modal ditutup
       $('#verifyModal').on('hidden.bs.modal', function() {
         $('#resumeDataBody').html('');
         $('#resumeDetails').hide();
+        $('#ralanDataBody').html('');
+        $('#ralanDetails').hide();
         $('.toggle-icon').text('+');
       });
   
