@@ -4,67 +4,160 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <style>
+    .label-value {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+    .label {
+      flex: 0 0 50%;
+      text-align: left;
+    }
+    .value-container {
+      display: flex;
+      justify-content: flex-start;
+      flex: 1;
+    }
+    .separator {
+      margin-left: auto;
+      padding-right: 5px;
+    }
+    .value {
+      flex: 1;
+    }
+  </style>
 </head>
 <body>
   <div>
     <h3>DETASEMEN KESEHATAN WILAYAH 03.04.03</h3>
     <h3>RUMAH SAKIT TINGKAT III 03.06.01 CIREMAI</h3>
     <p>Cirebon, <%= new Date().toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }) %></p>
-    <p>No. Resep: <%= data.detail.no_reg %></p>
-    <p>Ruang/ Poli: <%= data.detail.ruangan %></p>
-    <p>Dokter: <%= data.detail.nama_dokter %></p>
-    <p>No. SIP: <%= data.detail.no_sip %></p>
-    <h4><b>R/</b></h4>
-<table class='table'>
-<tbody>
-<% if (obat.length > 0) { %>
-  <% obat.forEach(val => { %>
-    <tr>
-      <td colspan='2' style='vertical-align:middle'><%= val.nama_obat %></td>
-      <td>
-        <%= val.aturan ? `Aturan Pakai ${val.aturan}` : "" %>&nbsp;<b><span style='font-size:20px' class='text-right'>&nbsp;&nbsp;<%= val.qty %><sup style='font-size:9px;'>&nbsp;<%= val.satuan %></sup></span></b>
-        <% let caraPakai = ""; %>
-        <% caraPakai += (val.pagi ? "Pagi" : ""); %>
-        <% caraPakai += (val.siang ? " - Siang" : ""); %>
-        <% caraPakai += (val.sore ? " - Sore" : ""); %>
-        <% caraPakai += (val.malem ? " - Malam" : ""); %>
-        <%= (caraPakai ? `<br>Cara Pakai -> ${caraPakai}` : "") %>
-      </td>
-    </tr>
-    <% racikan.forEach(row => { %>
-      <% if (row.kode_obat === val.kode_obat) { %>
-        <tr>
-          <td>&nbsp;&nbsp;</td>
-          <td><li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= row.nama_obat %></li></td>
-          <td>Satuan Kecil&nbsp;&nbsp;<%= row.qty_listracikan %>&nbsp;&nbsp;<b><span class='text-right'>&nbsp;&nbsp;<%= row.qty %><sup>&nbsp;<%= row.satuan %></sup></span></b></td>
-        </tr>
-      <% } %>
-    <% }) %>
-  <% }) %>
-<% } else { %>
-  <tr>
-    <td>
-      <div class="alert alert-warning">
-        <h4><i class="icon fa fa-warning"></i>Alert</h4>
-        Belum ada <b>Obat</b> yang diberi
+    <div class="label-value">
+      <span class="label">No. Resep</span>
+      <div class="value-container">
+        <span class="separator">:</span>
+        <span class="value"><%= data.detail.no_reg %></span>
       </div>
-    </td>
-  </tr>
-<% } %>
-</tbody>
-</table>
-<br>
-<b>Pro :</b>
-
+    </div>
+    <div class="label-value">
+      <span class="label">Ruang/ Poli</span>
+      <div class="value-container">
+        <span class="separator">:</span>
+        <span class="value"><%= data.detail.ruangan %></span>
+      </div>
+    </div>
+    <div class="label-value">
+      <span class="label">Dokter</span>
+      <div class="value-container">
+        <span class="separator">:</span>
+        <span class="value"><%= data.detail.nama_dokter %></span>
+      </div>
+    </div>
+    <div class="label-value">
+      <span class="label">No. SIP</span>
+      <div class="value-container">
+        <span class="separator">:</span>
+        <span class="value"><%= data.detail.no_sip %></span>
+      </div>
+    </div>
+    <h4><b>R/</b></h4>
+    <table class='table'>
+      <tbody>
+        <% if (obat.length > 0) { %>
+          <% obat.forEach(val => { %>
+            <tr>
+              <td colspan='2' style='vertical-align:middle'><%= val.nama_obat %></td>
+              <td>
+                <%= val.aturan ? `Aturan Pakai ${val.aturan}` : "" %>&nbsp;<b><span style='font-size:20px' class='text-right'>&nbsp;&nbsp;<%= val.qty %><sup style='font-size:9px;'>&nbsp;<%= val.satuan %></sup></span></b>
+                <% let caraPakai = ""; %>
+                <% caraPakai += (val.pagi ? "Pagi" : ""); %>
+                <% caraPakai += (val.siang ? " - Siang" : ""); %>
+                <% caraPakai += (val.sore ? " - Sore" : ""); %>
+                <% caraPakai += (val.malem ? " - Malam" : ""); %>
+                <%= (caraPakai ? `<br>Cara Pakai -> ${caraPakai}` : "") %>
+              </td>
+            </tr>
+            <% racikan.forEach(row => { %>
+              <% if (row.kode_obat === val.kode_obat) { %>
+                <tr>
+                  <td>&nbsp;&nbsp;</td>
+                  <td><li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= row.nama_obat %></li></td>
+                  <td>Satuan Kecil&nbsp;&nbsp;<%= row.qty_listracikan %>&nbsp;&nbsp;<b><span class='text-right'>&nbsp;&nbsp;<%= row.qty %><sup>&nbsp;<%= row.satuan %></sup></span></b></td>
+                </tr>
+              <% } %>
+            <% }) %>
+          <% }) %>
+        <% } else { %>
+          <tr>
+            <td>
+              <div class="alert alert-warning">
+                <h4><i class="icon fa fa-warning"></i>Alert</h4>
+                Belum ada <b>Obat</b> yang diberi
+              </div>
+            </td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+    <br>
     <p><b>Pro :</b></p>
-    <p>Nama Pasien: <%= data.master.nama_pasien %></p>
-    <p>Umur: <%= data.umur %></p>
-    <p>Diagnosa: <%= data.diagnosa ? data.diagnosa.diagnosa : "Tidak ada diagnosa" %></p>
-    <p>No. RM: <%= data.master.no_pasien %></p>
-    <p>Register: <%= data.detail.no_reg %></p>
-    <p>Alamat: <%= data.master.alamat %></p>
-    <p>No. Telp/ HP: <%= data.master.telpon %></p>
-    <p>Catatan: <%= data.diagnosa ? data.diagnosa.p : "Tidak ada catatan" %></p>
-</div>
+    <div class="label-value">
+      <span class="label">Nama Pasien</span>
+      <div class="value-container">
+        <span class="separator">:</span>
+        <span class="value"><%= data.master.nama_pasien %></span>
+      </div>
+    </div>
+    <div class="label-value">
+      <span class="label">Umur</span>
+      <div class="value-container">
+        <span class="separator">:</span>
+        <span class="value"><%= data.umur %></span>
+      </div>
+    </div>
+    <div class="label-value">
+      <span class="label">Diagnosa</span>
+      <div class="value-container">
+        <span class="separator">:</span>
+        <span class="value"><%= data.diagnosa ? data.diagnosa.diagnosa : "Tidak ada diagnosa" %></span>
+      </div>
+    </div>
+    <div class="label-value">
+      <span class="label">No. RM</span>
+      <div class="value-container">
+        <span class="separator">:</span>
+        <span class="value"><%= data.master.no_pasien %></span>
+      </div>
+    </div>
+    <div class="label-value">
+      <span class="label">Register</span>
+      <div class="value-container">
+        <span class="separator">:</span>
+        <span class="value"><%= data.detail.no_reg %></span>
+      </div>
+    </div>
+    <div class="label-value">
+      <span class="label">Alamat</span>
+      <div class="value-container">
+        <span class="separator">:</span>
+        <span class="value"><%= data.master.alamat %></span>
+      </div>
+    </div>
+    <div class="label-value">
+      <span class="label">No. Telp/ HP</span>
+      <div class="value-container">
+        <span class="separator">:</span>
+        <span class="value"><%= data.master.telpon %></span>
+      </div>
+    </div>
+    <div class="label-value">
+      <span class="label">Catatan</span>
+      <div class="value-container">
+        <span class="separator">:</span>
+        <span class="value"><%= data.diagnosa ? data.diagnosa.p : "Tidak ada catatan" %></span>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
