@@ -1,123 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Resep</title>
-    <link rel="stylesheet" href="/path/to/your/styles.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
-    <!-- Ionicons -->
-    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-    <!-- Tempusdominus Bootstrap 4 -->
-    <link rel="stylesheet" href="/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
-    <!-- iCheck -->
-    <link rel="stylesheet" href="/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-    <!-- JQVMap -->
-    <link rel="stylesheet" href="/plugins/jqvmap/jqvmap.min.css">
-    <!-- Theme style -->
-    <link rel="stylesheet" href="/dist/css/adminlte.min.css">
-    <!-- overlayScrollbars -->
-    <link rel="stylesheet" href="/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
-    <!-- Daterange picker -->
-    <link rel="stylesheet" href="/plugins/daterangepicker/daterangepicker.css">
-    <!-- summernote -->
-    <link rel="stylesheet" href="/plugins/summernote/summernote-bs4.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
 </head>
 <body>
-    <div>
-        <h3>DETASEMEN KESEHATAN WILAYAH 03.04.03</h3>
-        <h3>RUMAH SAKIT TINGKAT III 03.06.01 CIREMAI</h3>
-        <p>Cirebon, <%= new Date().toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }) %></p>
-        <p>No. Resep: <%= data.detail.no_reg %></p>
-        <p>Ruang/ Poli: <%= data.detail.ruangan %></p>
-        <p>Dokter: <%= data.detail.nama_dokter %></p>
-        <p>No. SIP: <%= data.detail.no_sip %></p>
-        <h4><b>R/</b></h4>
+  <div>
+    <h3>DETASEMEN KESEHATAN WILAYAH 03.04.03</h3>
+    <h3>RUMAH SAKIT TINGKAT III 03.06.01 CIREMAI</h3>
+    <p>Cirebon, <%= new Date().toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }) %></p>
+    <p>No. Resep: <%= data.detail.no_reg %></p>
+    <p>Ruang/ Poli: <%= data.detail.ruangan %></p>
+    <p>Dokter: <%= data.detail.nama_dokter %></p>
+    <p>No. SIP: <%= data.detail.no_sip %></p>
+    <h4><b>R/</b></h4>
 <table class='table'>
-  <tbody>
-    <% if (obat.length > 0) { %>
-      <% obat.forEach(val => { %>
+<tbody>
+<% if (obat.length > 0) { %>
+  <% obat.forEach(val => { %>
+    <tr>
+      <td colspan='2' style='vertical-align:middle'><%= val.nama_obat %></td>
+      <td>
+        <%= val.aturan ? `Aturan Pakai ${val.aturan}` : "" %>&nbsp;<b><span style='font-size:20px' class='text-right'>&nbsp;&nbsp;<%= val.qty %><sup style='font-size:9px;'>&nbsp;<%= val.satuan %></sup></span></b>
+        <% let caraPakai = ""; %>
+        <% caraPakai += (val.pagi ? "Pagi" : ""); %>
+        <% caraPakai += (val.siang ? " - Siang" : ""); %>
+        <% caraPakai += (val.sore ? " - Sore" : ""); %>
+        <% caraPakai += (val.malem ? " - Malam" : ""); %>
+        <%= (caraPakai ? `<br>Cara Pakai -> ${caraPakai}` : "") %>
+      </td>
+    </tr>
+    <% racikan.forEach(row => { %>
+      <% if (row.kode_obat === val.kode_obat) { %>
         <tr>
-          <td colspan='2' style='vertical-align:middle'><%= val.nama_obat %></td>
-          <td>
-            <%= val.aturan ? `Aturan Pakai ${val.aturan}` : "" %>&nbsp;<b><span style='font-size:20px' class='text-right'>&nbsp;&nbsp;<%= val.qty %><sup style='font-size:9px;'>&nbsp;<%= val.satuan %></sup></span></b>
-            <% let caraPakai = ""; %>
-            <% caraPakai += (val.pagi ? "Pagi" : ""); %>
-            <% caraPakai += (val.siang ? " - Siang" : ""); %>
-            <% caraPakai += (val.sore ? " - Sore" : ""); %>
-            <% caraPakai += (val.malem ? " - Malam" : ""); %>
-            <%= (caraPakai ? `<br>Cara Pakai -> ${caraPakai}` : "") %>
-          </td>
+          <td>&nbsp;&nbsp;</td>
+          <td><li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= row.nama_obat %></li></td>
+          <td>Satuan Kecil&nbsp;&nbsp;<%= row.qty_listracikan %>&nbsp;&nbsp;<b><span class='text-right'>&nbsp;&nbsp;<%= row.qty %><sup>&nbsp;<%= row.satuan %></sup></span></b></td>
         </tr>
-        <% racikan.forEach(row => { %>
-          <% if (row.kode_obat === val.kode_obat) { %>
-            <tr>
-              <td>&nbsp;&nbsp;</td>
-              <td><li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= row.nama_obat %></li></td>
-              <td>Satuan Kecil&nbsp;&nbsp;<%= row.qty_listracikan %>&nbsp;&nbsp;<b><span class='text-right'>&nbsp;&nbsp;<%= row.qty %><sup>&nbsp;<%= row.satuan %></sup></span></b></td>
-            </tr>
-          <% } %>
-        <% }) %>
-      <% }) %>
-    <% } else { %>
-      <tr>
-        <td>
-          <div class="alert alert-warning">
-            <h4><i class="icon fa fa-warning"></i>Alert</h4>
-            Belum ada <b>Obat</b> yang diberi
-          </div>
-        </td>
-      </tr>
-    <% } %>
-  </tbody>
+      <% } %>
+    <% }) %>
+  <% }) %>
+<% } else { %>
+  <tr>
+    <td>
+      <div class="alert alert-warning">
+        <h4><i class="icon fa fa-warning"></i>Alert</h4>
+        Belum ada <b>Obat</b> yang diberi
+      </div>
+    </td>
+  </tr>
+<% } %>
+</tbody>
 </table>
 <br>
 <b>Pro :</b>
 
-        <p><b>Pro :</b></p>
-        <p>Nama Pasien: <%= data.master.nama_pasien %></p>
-        <p>Umur: <%= data.umur %></p>
-        <p>Diagnosa: <%= data.diagnosa ? data.diagnosa.diagnosa : "Tidak ada diagnosa" %></p>
-        <p>No. RM: <%= data.master.no_pasien %></p>
-        <p>Register: <%= data.detail.no_reg %></p>
-        <p>Alamat: <%= data.master.alamat %></p>
-        <p>No. Telp/ HP: <%= data.master.telpon %></p>
-        <p>Catatan: <%= data.diagnosa ? data.diagnosa.p : "Tidak ada catatan" %></p>
-    </div>
-
-    <script src="/plugins/jquery/jquery.min.js"></script>
-    <!-- jQuery UI 1.11.4 -->
-    <script src="/plugins/jquery-ui/jquery-ui.min.js"></script>
-    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
-    <script>
-    $.widget.bridge('uibutton', $.ui.button)
-    </script>
-    <!-- Bootstrap 4 -->
-    <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <!-- ChartJS -->
-    <script src="/plugins/chart.js/Chart.min.js"></script>
-    <!-- Sparkline -->
-    <script src="/plugins/sparklines/sparkline.js"></script>
-    <!-- JQVMap -->
-    <script src="/plugins/jqvmap/jquery.vmap.min.js"></script>
-    <script src="/plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
-    <!-- jQuery Knob Chart -->
-    <script src="/plugins/jquery-knob/jquery.knob.min.js"></script>
-    <!-- daterangepicker -->
-    <script src="/plugins/moment/moment.min.js"></script>
-    <script src="/plugins/daterangepicker/daterangepicker.js"></script>
-    <!-- Tempusdominus Bootstrap 4 -->
-    <script src="/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
-    <!-- Summernote -->
-    <script src="/plugins/summernote/summernote-bs4.min.js"></script>
-    <!-- overlayScrollbars -->
-    <script src="/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
-    <!-- AdminLTE App -->
-    <script src="/dist/js/adminlte.js"></script>
-    <!-- AdminLTE for demo purposes -->
-    <script src="/dist/js/demo.js"></script>
-    <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-    <script src="/dist/js/pages/dashboard.js"></script>   
+    <p><b>Pro :</b></p>
+    <p>Nama Pasien: <%= data.master.nama_pasien %></p>
+    <p>Umur: <%= data.umur %></p>
+    <p>Diagnosa: <%= data.diagnosa ? data.diagnosa.diagnosa : "Tidak ada diagnosa" %></p>
+    <p>No. RM: <%= data.master.no_pasien %></p>
+    <p>Register: <%= data.detail.no_reg %></p>
+    <p>Alamat: <%= data.master.alamat %></p>
+    <p>No. Telp/ HP: <%= data.master.telpon %></p>
+    <p>Catatan: <%= data.diagnosa ? data.diagnosa.p : "Tidak ada catatan" %></p>
+</div>
 </body>
 </html>
