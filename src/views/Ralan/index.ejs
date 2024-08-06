@@ -159,14 +159,14 @@
           </div>
           <div class="section">
             <div class="section-title">
-              <h5>2. TINDAKAN RALAN</h5>
-              <span class="toggle-icon" id="ralan-button" onclick="toggleSection(this)">+</span>
+              <h5>2. E-RESEP</h5>
+              <span class="toggle-icon" id="eResep-button" onclick="toggleSection(this)">+</span>
             </div>
-            <div class="section-content" id="ralanDetails">
-              <div class="loading-spinner" id="ralanLoadingSpinner">
+            <div class="section-content" id="eResepDetail">
+              <div class="loading-spinner" id="eResepLoadingSpinner">
                 <img src="loading.gif" alt="Loading">
               </div>
-              <div id="ralanDataBody"></div>
+              <div id="eResepDataBody"></div>
             </div>
           </div>
         </div>
@@ -261,25 +261,25 @@
           alert('Please select a patient row to load resume data.');
         }
       });
-  // data tindakan ralan
-      $('#ralan-button').on('click', function() {
+  // data eResep
+      $('#eResep-button').on('click', function() {
         if (selectedData) {
           const no_rm = selectedData.noPasien;
           const no_reg = selectedData.noReg;
-          $('#ralanLoadingSpinner').show();
-          $('#ralanDataBody').hide(); // Hide the current data
+          $('#eResepLoadingSpinner').show();
+          $('#eResepDataBody').hide(); // Hide the current data
             $.ajax({
-              url: `e-Resep/getlistobat/${no_rm}/${no_reg}`,
+              url: `pasien/e-Resep/${no_rm}/${no_reg}`,
               method: 'GET',
               data: { no_rm: no_rm, no_reg: no_reg },
               success: function(response) {
-                $('#ralanDataBody').html(response);
-                $('#ralanLoadingSpinner').hide();
-                $('#ralanDataBody').show(); // Show the new data
+                $('#eResepDataBody').html(response);
+                $('#eResepLoadingSpinner').hide();
+                $('#eResepDataBody').show(); // Show the new data
               },
               error: function() {
                 alert('Gagal mengambil data ralan');
-                $('#ralanLoadingSpinner').hide();
+                $('#eResepLoadingSpinner').hide();
               }
             });
           }
@@ -292,8 +292,8 @@
       $('#verifyModal').on('hidden.bs.modal', function() {
         $('#resumeDataBody').html('');
         $('#resumeDetails').hide();
-        $('#ralanDataBody').html('');
-        $('#ralanDetails').hide();
+        $('#eResepDataBody').html('');
+        $('#eResepDetail').hide();
         $('.toggle-icon').text('+');
       });
   

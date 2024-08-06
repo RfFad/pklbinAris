@@ -5,13 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <style>
+    #judul{
+      margin-top: 20px;
+    }
+    h3{
+      font-size: 20px;
+      font-weight: bold;
+      line-height: 7px;
+      
+    }
+    #waktu{
+      flex: 0 0 30%;
+      text-align: left;
+    }
+    #tingkat{
+      
+      text-decoration: underline;
+      margin-bottom: 20px;
+    }
     .label-value {
       display: flex;
       justify-content: space-between;
       width: 100%;
+      margin-bottom: 10px;
+      font-size: 18px;
     }
     .label {
-      flex: 0 0 50%;
+      flex: 0 0 30%;
       text-align: left;
     }
     .value-container {
@@ -21,18 +41,19 @@
     }
     .separator {
       margin-left: auto;
-      padding-right: 5px;
+      padding-right: 10px;
     }
     .value {
       flex: 1;
+      right: 20px;
     }
   </style>
 </head>
 <body>
   <div>
-    <h3>DETASEMEN KESEHATAN WILAYAH 03.04.03</h3>
-    <h3>RUMAH SAKIT TINGKAT III 03.06.01 CIREMAI</h3>
-    <p>Cirebon, <%= new Date().toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }) %></p>
+    <h3 id="judul">DETASEMEN KESEHATAN WILAYAH 03.04.03</h3>
+    <h3 id="tingkat">RUMAH SAKIT TINGKAT III 03.06.01 CIREMAI</h3>
+    <p id="waktu">Cirebon, <%= new Date().toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }) %></p>
     <div class="label-value">
       <span class="label">No. Resep</span>
       <div class="value-container">
@@ -75,7 +96,7 @@
                 <% caraPakai += (val.siang ? " - Siang" : ""); %>
                 <% caraPakai += (val.sore ? " - Sore" : ""); %>
                 <% caraPakai += (val.malem ? " - Malam" : ""); %>
-                <%= (caraPakai ? `<br>Cara Pakai -> ${caraPakai}` : "") %>
+                <br><%= (caraPakai ? `Cara Pakai -> ${caraPakai}` : "") %>
               </td>
             </tr>
             <% racikan.forEach(row => { %>
@@ -120,7 +141,7 @@
       <span class="label">Diagnosa</span>
       <div class="value-container">
         <span class="separator">:</span>
-        <span class="value"><%= data.diagnosa ? data.diagnosa.diagnosa : "Tidak ada diagnosa" %></span>
+        <span class="value"><%= data.diagnosa ? data.diagnosa.a : "Tidak ada diagnosa" %></span>
       </div>
     </div>
     <div class="label-value">
