@@ -4,18 +4,18 @@ const verifyAndRefreshToken = (req, res, next) => {
     const token = req.cookies.token;
 
     if (!token) {
-        return res.status(403).json({
+        return console.log({
             status: 'error',
             message: 'No token provided',
-        });
+        },res.redirect('/login'));
     }
 
     jwt.verify(token, 'SECRET', (err, decoded) => {
         if (err) {
-            return res.status(403).json({
+            return console.log({
                 status: 'error',
                 message: 'Failed to authenticate token',
-            });
+            },res.redirect('/login'));
         }
 
         // Check if the token is about to expire (e.g., within the next 10 minutes)

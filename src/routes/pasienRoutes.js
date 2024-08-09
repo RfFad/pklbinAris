@@ -11,7 +11,7 @@ router.use(verifyAndRefreshToken);
 // Route to fetch resume data by no_reg
 router.get('/', showPatients,verifyUser.isLogin,authHeader);
 router.get('/resume/:no_rm', verifyResume,authHeader);
-router.get('/e-Resep/:no_rm/:no_reg', getListObat);
+router.get('/e-Resep/:no_rm/:no_reg', getListObat,verifyUser.isLogin,authHeader);
 
 
 module.exports = router;
